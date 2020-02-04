@@ -1,0 +1,21 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'src'
+        }
+    }
+}
+
+repositories {
+    maven {
+        name = 'JitPack'
+        url = 'https://jitpack.io/'
+    }
+}
+
+dependencies {
+    implementation 'com.github.KaptainWutax:SeedCracker:38a7337'
+}

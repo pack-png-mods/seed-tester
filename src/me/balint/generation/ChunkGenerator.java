@@ -39,7 +39,7 @@ public class ChunkGenerator {
         int worldX = 0;
         int worldZ = 0;
 
-        Rand random = new Rand(chunkSeed);
+        Rand random = new Rand(chunkSeed, false);
 
         // Dungeons
         for (int i = 0; i < 8; i++) {
