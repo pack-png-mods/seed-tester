@@ -35,11 +35,11 @@ public class NoiseGeneratorPerlin
 
     }
 
-    public double generateNoise(double d, double d1, double d2)
+    public double generateNoise(double x, double y, double z)
     {
-        double d3 = d + xCoord;
-        double d4 = d1 + y_03;
-        double d5 = d2 + z_03;
+        double d3 = x + xCoord;
+        double d4 = y + y_03;
+        double d5 = z + z_03;
         int i = (int)d3;
         int j = (int)d4;
         int k = (int)d5;
@@ -78,7 +78,7 @@ public class NoiseGeneratorPerlin
         return d1 + d * (d2 - d1);
     }
 
-    public final double func_4110_a(int i, double d, double d1)
+    public final double grad2D(int i, double d, double d1)
     {
         int j = i & 0xf;
         double d2 = (double)(1 - ((j & 8) >> 3)) * d;
@@ -99,17 +99,18 @@ public class NoiseGeneratorPerlin
         return generateNoise(x, y, 0.0D);
     }
 
-    public void func_805_a(double ad[], double xin, double d1, double d2,
-                           int x1, int j, int k, double xm, double d4,
-                           double d5, double d6)
+    public void generateNoise(double[] ad,
+                              double xin, double yin, double zin,
+                              int width, int height, int depth,
+                              double xScale, double yScale, double zScale, double scale)
     {
-        if(j == 1)
+        if(height == 1)
         {
             int j3 = 0;
-            double d12 = 1.0D / d6;
-            for(int xi = 0; xi < x1; xi++)
+            double d12 = 1.0D / scale;
+            for(int xi = 0; xi < width; xi++)
             {
-                double x = (xin + (double)xi) * xm + xCoord;
+                double x = (xin + (double)xi) * xScale + xCoord;
                 int X = (int)x;
                 if(x < (double)X)
                 {
@@ -118,9 +119,9 @@ public class NoiseGeneratorPerlin
                 int k4 = X & 0xff;
                 x -= X;
                 double d17 = x * x * x * (x * (x * 6D - 15D) + 10D);
-                for(int l4 = 0; l4 < k; l4++)
+                for(int l4 = 0; l4 < depth; l4++)
                 {
-                    double d19 = (d2 + (double)l4) * d5 + z_03;
+                    double d19 = (zin + (double)l4) * zScale + z_03;
                     int j5 = (int)d19;
                     if(d19 < (double)j5)
                     {
@@ -132,7 +133,7 @@ public class NoiseGeneratorPerlin
                     int l = permutations[k4] + 0;
                     int j1 = permutations[l] + l5;
                     int l1 = permutations[permutations[k4 + 1] + 0] + l5;
-                    double d9 = lerp(d17, func_4110_a(permutations[j1], x, d19), grad(permutations[l1], x - 1.0D, 0.0D, d19));
+                    double d9 = lerp(d17, grad2D(permutations[j1], x, d19), grad(permutations[l1], x - 1.0D, 0.0D, d19));
                     double d11 = lerp(d17, grad(permutations[j1 + 1], x, 0.0D, d19 - 1.0D), grad(permutations[l1 + 1], x - 1.0D, 0.0D, d19 - 1.0D));
                     double d23 = lerp(d21, d9, d11);
                     ad[j3++] += d23 * d12;
@@ -143,7 +144,7 @@ public class NoiseGeneratorPerlin
             return;
         }
         int i1 = 0;
-        double d7 = 1.0D / d6;
+        double d7 = 1.0D / scale;
         int i2 = -1;
         boolean flag4 = false;
         boolean flag5 = false;
@@ -155,9 +156,9 @@ public class NoiseGeneratorPerlin
         double d15 = 0.0D;
         double d16 = 0.0D;
         double d18 = 0.0D;
-        for(int i5 = 0; i5 < x1; i5++)
+        for(int i5 = 0; i5 < width; i5++)
         {
-            double d20 = (xin + (double)i5) * xm + xCoord;
+            double d20 = (xin + (double)i5) * xScale + xCoord;
             int k5 = (int)d20;
             if(d20 < (double)k5)
             {
@@ -166,9 +167,9 @@ public class NoiseGeneratorPerlin
             int i6 = k5 & 0xff;
             d20 -= k5;
             double d22 = d20 * d20 * d20 * (d20 * (d20 * 6D - 15D) + 10D);
-            for(int j6 = 0; j6 < k; j6++)
+            for(int j6 = 0; j6 < depth; j6++)
             {
-                double d24 = (d2 + (double)j6) * d5 + z_03;
+                double d24 = (zin + (double)j6) * zScale + z_03;
                 int k6 = (int)d24;
                 if(d24 < (double)k6)
                 {
@@ -177,9 +178,9 @@ public class NoiseGeneratorPerlin
                 int l6 = k6 & 0xff;
                 d24 -= k6;
                 double d25 = d24 * d24 * d24 * (d24 * (d24 * 6D - 15D) + 10D);
-                for(int i7 = 0; i7 < j; i7++)
+                for(int i7 = 0; i7 < height; i7++)
                 {
-                    double d26 = (d1 + (double)i7) * d4 + y_03;
+                    double d26 = (yin + (double)i7) * yScale + y_03;
                     int j7 = (int)d26;
                     if(d26 < (double)j7)
                     {
@@ -214,7 +215,7 @@ public class NoiseGeneratorPerlin
 
     }
 
-    private int permutations[];
+    private int[] permutations;
     public double xCoord;
     public double y_03;
     public double z_03;

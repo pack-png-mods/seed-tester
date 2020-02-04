@@ -3,30 +3,30 @@ package me.balint.generation;
 import kaptainwutax.seedcracker.util.Rand;
 import me.balint.math.Vector;
 
-
+@SuppressWarnings("unused")
 public class ChunkGenerator {
 
     // todo: set to actual values
-    private final int TREE1_X = 5; // Left tree on the image
-    private final int TREE1_Z = 5;
-    private final int TREE2_X = 7; // right tree on the image
-    private final int TREE2_Z = 7;
-    private final int ILLEGAL_TREE_MIN_X = 8; // Minimum positions of the part where trees didn't spawn but could
-    private final int ILLEGAL_TREE_MIN_Y = 8; // Should probably be changed to something less inclusive
-    private final int WATERFALL_X = 5;
-    private final int WATERFALL_Y = 5;
-    private final int REQUIRED_TREES = 2;
+    private static final int TREE1_X = 5; // Left tree on the image
+    private static final int TREE1_Z = 5;
+    private static final int TREE2_X = 7; // right tree on the image
+    private static final int TREE2_Z = 7;
+    private static final int ILLEGAL_TREE_MIN_X = 8; // Minimum positions of the part where trees didn't spawn but could
+    private static final int ILLEGAL_TREE_MIN_Y = 8; // Should probably be changed to something less inclusive
+    private static final int WATERFALL_X = 5;
+    private static final int WATERFALL_Y = 5;
+    private static final int REQUIRED_TREES = 2;
 
     public enum TreeType {
         NORMAL,
         BIG
     }
 
-    public class Tree {
+    public static class Tree {
 
-        public Vector position;
-        int height;
-        public TreeType type;
+        public final Vector position;
+        public final int height;
+        public final TreeType type;
 
         public Tree(Vector position, int height, TreeType type) {
             this.position = position;

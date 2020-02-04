@@ -13,12 +13,12 @@ public class MathHelper
 
     public static float sin(float f)
     {
-        return field_1653_a[(int)(f * 10430.38F) & 0xffff];
+        return SIN_TABLE[(int)(f * 10430.38F) & 0xffff];
     }
 
     public static float cos(float f)
     {
-        return field_1653_a[(int)(f * 10430.38F + 16384F) & 0xffff];
+        return SIN_TABLE[(int)(f * 10430.38F + 16384F) & 0xffff];
     }
 
     public static float sqrt_float(float f)
@@ -72,14 +72,14 @@ public class MathHelper
         }
     }
 
-    private static float[] field_1653_a;
+    private static float[] SIN_TABLE;
 
     static
     {
-        field_1653_a = new float[0x10000];
+        SIN_TABLE = new float[0x10000];
         for(int i = 0; i < 0x10000; i++)
         {
-            field_1653_a[i] = (float)Math.sin(((double)i * 3.1415926535897931D * 2D) / 65536D);
+            SIN_TABLE[i] = (float)Math.sin(((double)i * 3.1415926535897931D * 2D) / 65536D);
         }
 
     }
