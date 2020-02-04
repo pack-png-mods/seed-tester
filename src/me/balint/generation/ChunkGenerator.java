@@ -1,15 +1,21 @@
 package me.balint.generation;
 
 import kaptainwutax.seedcracker.util.Rand;
-import me.balint.math.MathHelper;
-import me.balint.math.NoiseGeneratorOctaves;
 import me.balint.math.Vector;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 
 
 public class ChunkGenerator {
+
+    // todo: set to actual values
+    private final int TREE1_X = 5; // Left tree on the image
+    private final int TREE1_Z = 5;
+    private final int TREE2_X = 7; // right tree on the image
+    private final int TREE2_Z = 7;
+    private final int ILLEGAL_TREE_MIN_X = 8; // Minimum positions of the part where trees didn't spawn but could
+    private final int ILLEGAL_TREE_MIN_Y = 8; // Should probably be changed to something less inclusive
+    private final int WATERFALL_X = 5;
+    private final int WATERFALL_Y = 5;
+    private final int REQUIRED_TREES = 2;
 
     public enum TreeType {
         NORMAL,
@@ -109,21 +115,13 @@ public class ChunkGenerator {
 
         // Trees
         double treeNoiseScale = 0.5D;
-        /*
-        int baseTreeCount = (int)((treeNoise.genOctaves((double)worldX * treeNoiseScale, (double)worldZ * treeNoiseScale) / 8D + rand.nextDouble() * 4D + 4D) / 3D);
-        important parts:
-            (treeNoise.genOctaves((double)worldX, (double)worldZ) / 8D + rand.nextDouble() * 4D + 4D) / 3D
-         */
         int maxBaseTreeCount = 18; // 13 + 5
-        TreeType type = TreeType.NORMAL;
         if (random.nextInt(10) == 0)
             maxBaseTreeCount++;
         if (random.nextInt(10) == 0)
             return false;
 
-        
-
-        return true;
+        return checkTrees(random, worldX, worldZ, maxBaseTreeCount);;
     }
 
     private void generateDungeon(Rand random, int x, int y, int z) {
@@ -156,16 +154,41 @@ public class ChunkGenerator {
         }
     }
 
-    private boolean checkTrees(Rand random, int worldX, int worldZ, Tree[] trees, int currentTree, int offset, int maxTreeCount) {
-        long seed = random.getSeed();
-        int treeX = worldX + random.nextInt(16) + 8;
-        int treeZ = worldZ + random.nextInt(16) + 8;
+    private boolean checkTrees(Rand random, int worldX, int worldZ, int maxTreeCount) {
+        boolean firstTreeFound = false;
+        boolean secondTreeFound = false;
+        int foundTrees = 0;
+        for (int i = 0; i < maxTreeCount; i++) {
+            int treeX = worldX + random.nextInt(16) + 8;
+            int treeZ = worldZ + random.nextInt(16) + 8;
+            if (!firstTreeFound && treeX == TREE1_X && treeZ == TREE1_Z) {
+                generateLeafPattern(random);
+                foundTrees++;
+                firstTreeFound = true;
+            } else if (!secondTreeFound && treeX == TREE2_X && treeZ == TREE2_Z) {
+                boolean[] leafPattern = generateLeafPattern(random);
+                if (!leafPattern[0] && leafPattern[4]) {
+                    foundTrees++;
+                    secondTreeFound = true;
+                } else {
+                    return false;
+                }
+            } else if (treeX > 8 && treeZ > 8) {
+                return false;
+            }
 
-        // TODO: check tree
-        //      correct: check for other trees
-        //      incorrect: go back
+            if (foundTrees == 2)
+                return true;
+        }
+        return false;
+    }
 
-        return true;
+    private boolean[] generateLeafPattern(Rand random) {
+        boolean[] out = new boolean[16];
+        for (int i = 0; i < 16; i++) {
+            out[i] = random.nextInt(2) != 0;
+        }
+        return out;
     }
 }
 
