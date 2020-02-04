@@ -4,18 +4,22 @@ import kaptainwutax.seedcracker.util.Rand;
 import me.balint.math.Vector;
 
 @SuppressWarnings("unused")
-public class ChunkGenerator {
+public class  ChunkGenerator {
 
     // todo: set to actual values
-    private static final int TREE1_X = 5; // Left tree on the image
-    private static final int TREE1_Z = 5;
-    private static final int TREE2_X = 7; // right tree on the image
-    private static final int TREE2_Z = 7;
-    private static final int ILLEGAL_TREE_MIN_X = 8; // Minimum positions of the part where trees didn't spawn but could
-    private static final int ILLEGAL_TREE_MIN_Y = 8; // Should probably be changed to something less inclusive
     private static final int WATERFALL_X = 5;
-    private static final int WATERFALL_Y = 5;
-    private static final int REQUIRED_TREES = 2;
+    private static final int WATERFALL_Z = 5;
+    private static final int TREE1_X = WATERFALL_X - 5; // Left tree on the image
+    private static final int TREE1_Z = WATERFALL_Z - 9;
+    private static final int TREE2_X = WATERFALL_X - 3; // right tree on the image
+    private static final int TREE2_Z = WATERFALL_Z + 3;
+    private static final int TREE3_MIN_X = WATERFALL_X + 3; // blob
+    private static final int TREE3_MAX_X = WATERFALL_X + 5; // blob
+    private static final int TREE3_MIN_Z = WATERFALL_Z - 9;
+    private static final int TREE3_MAX_Z = WATERFALL_Z - 6;
+    private static final boolean THIRD_TREE_ENABLED = false;
+    private static final int ILLEGAL_TREE_MIN_X = 8; // Minimum positions of the part where trees didn't spawn but could
+    private static final int ILLEGAL_TREE_MIN_Z = 8; // Should probably be changed to something less inclusive
 
     public enum TreeType {
         NORMAL,
@@ -121,7 +125,7 @@ public class ChunkGenerator {
         if (random.nextInt(10) == 0)
             return false;
 
-        return checkTrees(random, worldX, worldZ, maxBaseTreeCount);
+        return checkTrees(random, maxBaseTreeCount);
     }
 
     private void generateDungeon(Rand random, int x, int y, int z) {
@@ -154,13 +158,14 @@ public class ChunkGenerator {
         }
     }
 
-    private boolean checkTrees(Rand random, int worldX, int worldZ, int maxTreeCount) {
+    private boolean checkTrees(Rand random, int maxTreeCount) {
         boolean firstTreeFound = false;
         boolean secondTreeFound = false;
+        boolean thirdTreeFound = false;
         int foundTrees = 0;
         for (int i = 0; i < maxTreeCount; i++) {
-            int treeX = worldX + random.nextInt(16) + 8;
-            int treeZ = worldZ + random.nextInt(16) + 8;
+            int treeX = random.nextInt(16) + 8;
+            int treeZ = random.nextInt(16) + 8;
             if (!firstTreeFound && treeX == TREE1_X && treeZ == TREE1_Z) {
                 generateLeafPattern(random);
                 foundTrees++;
@@ -173,11 +178,19 @@ public class ChunkGenerator {
                 } else {
                     return false;
                 }
-            } else if (treeX > 8 && treeZ > 8) {
+            } else if (treeX > ILLEGAL_TREE_MIN_X && treeZ > ILLEGAL_TREE_MIN_Z) {
                 return false;
             }
 
-            if (foundTrees == 2)
+            if (THIRD_TREE_ENABLED) {
+                if (!thirdTreeFound && treeX >= TREE3_MIN_X && treeX <= TREE3_MAX_X && treeZ >= TREE3_MIN_Z && treeZ <= TREE3_MAX_Z) {
+                    generateLeafPattern(random);
+                    foundTrees++;
+                    thirdTreeFound = true;
+                }
+            }
+
+            if ((THIRD_TREE_ENABLED && foundTrees == 3) || foundTrees == 2)
                 return true;
         }
         return false;
