@@ -121,7 +121,7 @@ public class ChunkGenerator {
         if (random.nextInt(10) == 0)
             return false;
 
-        return checkTrees(random, worldX, worldZ, maxBaseTreeCount);;
+        return checkTrees(random, worldX, worldZ, maxBaseTreeCount);
     }
 
     private void generateDungeon(Rand random, int x, int y, int z) {
