@@ -2,7 +2,6 @@ package me.balint.generation;
 
 import kaptainwutax.seedcracker.util.Rand;
 import kaptainwutax.seedcracker.util.math.LCG;
-import me.balint.math.Vector;
 
 @SuppressWarnings("unused")
 public class  ChunkGenerator {
@@ -22,39 +21,17 @@ public class  ChunkGenerator {
     private static final int ILLEGAL_TREE_MIN_X = 8; // Minimum positions of the part where trees didn't spawn but could
     private static final int ILLEGAL_TREE_MIN_Z = 8; // Should probably be changed to something less inclusive
 
-    private static final LCG advance_3756 = Rand.JAVA_LCG.combine(3756);
-
-    public enum TreeType {
-        NORMAL,
-        BIG
-    }
-
-    public static class Tree {
-
-        public final Vector position;
-        public final int height;
-        public final TreeType type;
-
-        public Tree(Vector position, int height, TreeType type) {
-            this.position = position;
-            this.height = height;
-            this.type = type;
-        }
-    }
+    private static final LCG advance_3759 = Rand.JAVA_LCG.combine(3759);
 
     public boolean populate(long chunkSeed) {
         int worldX = 0;
         int worldZ = 0;
 
-        Rand random = new Rand(advance_3756.nextSeed(chunkSeed), false);
-
-        random.nextDouble(); // Tree count random
+        Rand random = new Rand(advance_3759.nextSeed(chunkSeed), false);
 
         // Trees
         double treeNoiseScale = 0.5D;
-        int maxBaseTreeCount = 18; // 13 + 5
-        if (random.nextInt(10) == 0)
-            maxBaseTreeCount++;
+        int maxBaseTreeCount = 19;
         if (random.nextInt(10) == 0)
             return false;
 
