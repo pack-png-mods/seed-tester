@@ -115,8 +115,10 @@ public class Main {
 
     public void start() {
         ChunkGenerator generator = new ChunkGenerator();
-        for (int i = 0; i < seeds.length; i++) {
-            generator.populate(seeds[i]);
+        long time = System.currentTimeMillis();
+        for (int i = 0; i < 2000000; i++) {
+            generator.populate(seeds[i % seeds.length]);
         }
+        System.out.println(System.currentTimeMillis() - time);
     }
 }
