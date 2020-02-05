@@ -7,10 +7,10 @@ import me.balint.math.Vector;
 public class  ChunkGenerator {
 
     // todo: set to actual values
-    private static final int WATERFALL_X = 5;
-    private static final int WATERFALL_Z = 5;
+    private static final int WATERFALL_X = 14;
+    private static final int WATERFALL_Z = 10;
     private static final int TREE1_X = WATERFALL_X - 5; // Left tree on the image
-    private static final int TREE1_Z = WATERFALL_Z - 9;
+    private static final int TREE1_Z = WATERFALL_Z - 8;
     private static final int TREE2_X = WATERFALL_X - 3; // right tree on the image
     private static final int TREE2_Z = WATERFALL_Z + 3;
     private static final int TREE3_MIN_X = WATERFALL_X + 3; // blob
@@ -39,7 +39,7 @@ public class  ChunkGenerator {
         }
     }
 
-    public boolean populate(long chunkSeed, Tree[] trees) {
+    public boolean populate(long chunkSeed) {
         int worldX = 0;
         int worldZ = 0;
 
@@ -117,6 +117,8 @@ public class  ChunkGenerator {
             generateOre(random, x, y, z, 7);
         }
 
+        random.nextDouble(); // Tree count random
+
         // Trees
         double treeNoiseScale = 0.5D;
         int maxBaseTreeCount = 18; // 13 + 5
@@ -147,7 +149,7 @@ public class  ChunkGenerator {
         //double zMax = (float)(z + 8) - (MathHelper.cos(f) * (float) blockNum) / 8F;
         double yMin = y + random.nextInt(3) + 2;
         double yMax = y + random.nextInt(3) + 2;
-        for (int i = 0; i < blockNum; i++) {
+        for (int i = 0; i <= blockNum; i++) {
             //double blockX = xMin + (xMax - xMin) * ((double) i / (double) blockNum);
             //double blockY = yMin + (yMax - yMin) * ((double) i / (double) blockNum);
             //double blockZ = zMin + (zMax - zMin) * ((double) i / (double) blockNum);
@@ -164,8 +166,9 @@ public class  ChunkGenerator {
         boolean thirdTreeFound = false;
         int foundTrees = 0;
         for (int i = 0; i < maxTreeCount; i++) {
-            int treeX = random.nextInt(16) + 8;
-            int treeZ = random.nextInt(16) + 8;
+            int treeX = random.nextInt(16);
+            int treeZ = random.nextInt(16);
+            int height = random.nextInt(3) + 4;
             if (!firstTreeFound && treeX == TREE1_X && treeZ == TREE1_Z) {
                 generateLeafPattern(random);
                 foundTrees++;
@@ -178,8 +181,6 @@ public class  ChunkGenerator {
                 } else {
                     return false;
                 }
-            } else if (treeX > ILLEGAL_TREE_MIN_X && treeZ > ILLEGAL_TREE_MIN_Z) {
-                return false;
             }
 
             if (THIRD_TREE_ENABLED) {
