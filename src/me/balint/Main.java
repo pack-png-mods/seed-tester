@@ -1,124 +1,60 @@
 package me.balint;
 
 import me.balint.generation.ChunkGenerator;
-import me.balint.math.NoiseGeneratorPerlin;
 
 import java.io.*;
-import java.util.Random;
+import java.text.DecimalFormat;
 
-public class Main {
+public class Main implements Runnable {
 
     public static void main(String[] args) {
         new Main().start();
     }
-    private long[] seeds = new long[] {
-            10779487461921L,
-            147119085735879L,
-            204673508868082L,
-            161497993996411L,
-            27578886137269L,
-            107813042641499L,
-            131052223729078L,
-            210249354906786L,
-            227369309468628L,
-            6080563310389L,
-            175550394047896L,
-            143645291593062L,
-            20154787202822L,
-            132188230455707L,
-            242757838117940L,
-            32430407004440L,
-            15792637746895L,
-            27622287957541L,
-            26995496789317L,
-            123907940835238L,
-            179185062068347L,
-            171400277169231L,
-            53069867273354L,
-            119498859440360L,
-            167680489987941L,
-            224272673991481L,
-            160487280123615L,
-            151774762455018L,
-            212487270461064L,
-            7586717160471L,
-            199106877809548L,
-            169750651954778L,
-            7957006540057L,
-            40367901225471L,
-            214637753729458L,
-            57009487681907L,
-            167161967284169L,
-            50122042841580L,
-            237339910106305L,
-            119032120723230L,
-            227149198495346L,
-            156828686765053L,
-            17610295854057L,
-            225216056368116L,
-            151269887540865L,
-            130676358375080L,
-            39040888925382L,
-            87832218258437L,
-            240849753308575L,
-            934688189608L,
-            105060791927322L,
-            24932925040068L,
-            277999844886940L,
-            62728209146707L,
-            274927752059158L,
-            137582112409460L,
-            187001718388094L,
-            230981498569027L,
-            256615226039517L,
-            250235591747216L,
-            13765686348053L,
-            31489509087520L,
-            191320332321198L,
-            208083191928551L,
-            93616516138573L,
-            15463865856720L,
-            109856661654338L,
-            195904816482563L,
-            241544295377434L,
-            203837814210984L,
-            266731685921390L,
-            30454226558089L,
-            142544170630765L,
-            254714271068572L,
-            192028883367931L,
-            254917938888304L,
-            42437050066389L,
-            89792842189123L,
-            10969963645062L,
-            243010560383815L,
-            103529692293550L,
-            73858019367458L,
-            178619920721903L,
-            72252478444349L,
-            45607076075112L,
-            122698813526528L,
-            184114762777898L,
-            46589524051551L,
-            190200039338980L,
-            54310269151895L,
-            62140718036843L,
-            164323363348442L,
-            216654707515446L,
-            205657148199753L,
-            229242805537068L,
-            250805693137250L,
-            122793691776949L,
-            232442110669902L,
-            32826394883570L
-    };
+
+    private int processed = 0;
+    private int found = 0;
+    private int lastProcessed = 0;
+    private boolean running = true;
 
     public void start() {
         ChunkGenerator generator = new ChunkGenerator();
-        long time = System.currentTimeMillis();
-        for (int i = 0; i < 100; i++) {
-            System.out.println(generator.populate(seeds[i % seeds.length]));
+        Thread printingThread = new Thread(this);
+        printingThread.start();
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("seeds.txt"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("out.txt"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                processed++;
+                long seed = Long.parseLong(line);
+                if (generator.populate(seed)) {
+                    found++;
+                    writer.write(line + "\n");
+                }
+            }
+            reader.close();
+            writer.close();
+            running = false;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        System.out.println(System.currentTimeMillis() - time);
+        try {
+            printingThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void run() {
+        DecimalFormat formatter = new DecimalFormat("#.##");
+        while (running) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) { }
+            System.out.println("Processed " + processed + " seeds, found " + found + " correct ones. Speed: "
+                    + formatter.format((double)(processed - lastProcessed) / 1000000) + "m/s, percentage of correct seeds: " + formatter.format((double) found / processed * 100) + "%");
+            lastProcessed = processed;
+        }
     }
 }

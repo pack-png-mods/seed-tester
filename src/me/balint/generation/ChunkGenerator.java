@@ -31,7 +31,7 @@ public class  ChunkGenerator {
 
         // Trees
         double treeNoiseScale = 0.5D;
-        int maxBaseTreeCount = 19;
+        int maxBaseTreeCount = 12;
         if (random.nextInt(10) == 0)
             return false;
 
@@ -69,7 +69,7 @@ public class  ChunkGenerator {
                 }
             }
 
-            if ((THIRD_TREE_ENABLED && foundTrees == 3) || foundTrees == 2)
+            if ((THIRD_TREE_ENABLED && foundTrees == 3) || (!THIRD_TREE_ENABLED && foundTrees == 2))
                 return true;
         }
         return false;
