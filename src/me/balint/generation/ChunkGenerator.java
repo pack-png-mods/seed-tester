@@ -11,8 +11,10 @@ public class  ChunkGenerator {
     private static final int WATERFALL_Z = 10;
     private static final int TREE1_X = WATERFALL_X - 5; // Left tree on the image
     private static final int TREE1_Z = WATERFALL_Z - 8;
+    private static final int TREE1_HEIGHT = 5;
     private static final int TREE2_X = WATERFALL_X - 3; // right tree on the image
     private static final int TREE2_Z = WATERFALL_Z + 3;
+    private static final int TREE2_HEIGHT = 5;
     private static final int TREE3_MIN_X = WATERFALL_X + 3; // blob
     private static final int TREE3_MAX_X = WATERFALL_X + 5; // blob
     private static final int TREE3_MIN_Z = WATERFALL_Z - 9;
@@ -47,11 +49,11 @@ public class  ChunkGenerator {
             int treeX = random.nextInt(16);
             int treeZ = random.nextInt(16);
             int height = random.nextInt(3) + 4;
-            if (!firstTreeFound && treeX == TREE1_X && treeZ == TREE1_Z) {
+            if (!firstTreeFound && treeX == TREE1_X && treeZ == TREE1_Z && height == TREE1_HEIGHT) {
                 generateLeafPattern(random);
                 foundTrees++;
                 firstTreeFound = true;
-            } else if (!secondTreeFound && treeX == TREE2_X && treeZ == TREE2_Z) {
+            } else if (!secondTreeFound && treeX == TREE2_X && treeZ == TREE2_Z && height == TREE2_HEIGHT) {
                 boolean[] leafPattern = generateLeafPattern(random);
                 if (!leafPattern[0] && leafPattern[4]) {
                     foundTrees++;
