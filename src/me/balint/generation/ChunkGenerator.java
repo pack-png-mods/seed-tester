@@ -61,6 +61,11 @@ public class  ChunkGenerator {
                 } else {
                     return false;
                 }
+            } else {
+                if (!firstTreeFound && Math.max(Math.abs(treeX - TREE1_X), Math.abs(treeZ - TREE1_Z)) <= 1
+                        || !secondTreeFound && Math.max(Math.abs(treeX - TREE2_X), Math.abs(treeZ - TREE2_Z)) <= 1) {
+                    return false;
+                }
             }
 
             if (THIRD_TREE_ENABLED) {
