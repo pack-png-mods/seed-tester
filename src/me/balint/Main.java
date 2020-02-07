@@ -3,6 +3,8 @@ package me.balint;
 import me.balint.generation.ChunkGenerator;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 
 public class Main implements Runnable {

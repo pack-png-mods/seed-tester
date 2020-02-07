@@ -8,6 +8,7 @@ public class  ChunkGenerator {
 
     // todo: set to actual values
     private static final int WATERFALL_X = 14;
+    private static final int WATERFALL_Y = 76;
     private static final int WATERFALL_Z = 10;
     private static final int TREE1_X = WATERFALL_X - 5; // Left tree on the image
     private static final int TREE1_Z = WATERFALL_Z - 8;
@@ -24,6 +25,9 @@ public class  ChunkGenerator {
     private static final int ILLEGAL_TREE_MIN_Z = 8; // Should probably be changed to something less inclusive
 
     private static final LCG advance_3759 = Rand.JAVA_LCG.combine(3759);
+    private static final LCG advance_774 = Rand.JAVA_LCG.combine(774);
+    private static final LCG advance_387 = Rand.JAVA_LCG.combine(387);
+    private static final LCG advance_830 = Rand.JAVA_LCG.combine(830);
 
     public boolean populate(long chunkSeed) {
         int worldX = 0;
@@ -37,15 +41,31 @@ public class  ChunkGenerator {
         if (random.nextInt(10) == 0)
             return false;
 
-        return checkTrees(random, maxBaseTreeCount);
+        int usedTrees = checkTrees(random, maxBaseTreeCount);
+        if (usedTrees == -1)
+            return false;
+        long seed = random.getSeed();
+        for (int i = usedTrees; i <= maxBaseTreeCount; i++) {
+            simulateDecorations(random);
+            if (checkWaterfalls(random)) {
+                return true;
+            }
+
+            random.setSeed(seed, false);
+            random.nextInt(16);
+            random.nextInt(16);
+            random.nextInt(3);
+            seed = random.getSeed();
+        }
+        return false;
     }
 
-    private boolean checkTrees(Rand random, int maxTreeCount) {
+    private int checkTrees(Rand random, int maxTreeCount) {
         boolean firstTreeFound = false;
         boolean secondTreeFound = false;
         boolean thirdTreeFound = false;
         int foundTrees = 0;
-        for (int i = 0; i < maxTreeCount; i++) {
+        for (int i = 0; i <= maxTreeCount; i++) {
             int treeX = random.nextInt(16);
             int treeZ = random.nextInt(16);
             int height = random.nextInt(3) + 4;
@@ -59,12 +79,14 @@ public class  ChunkGenerator {
                     foundTrees++;
                     secondTreeFound = true;
                 } else {
-                    return false;
+                    return -1;
                 }
             } else {
+                if (treeZ >= WATERFALL_Z - 1 && treeZ <= WATERFALL_Z + 1 && treeX <= WATERFALL_X - 3 && treeX >= WATERFALL_X - 5)
+                    return -1;
                 if (!firstTreeFound && Math.max(Math.abs(treeX - TREE1_X), Math.abs(treeZ - TREE1_Z)) <= 1
                         || !secondTreeFound && Math.max(Math.abs(treeX - TREE2_X), Math.abs(treeZ - TREE2_Z)) <= 1) {
-                    return false;
+                    return -1;
                 }
             }
 
@@ -77,19 +99,48 @@ public class  ChunkGenerator {
             }
 
             if ((THIRD_TREE_ENABLED && foundTrees == 3) || (!THIRD_TREE_ENABLED && foundTrees == 2))
-                return true;
+                return i;
         }
-        return false;
+        return -1;
     }
-
-
-
     private boolean[] generateLeafPattern(Rand random) {
         boolean[] out = new boolean[16];
         for (int i = 0; i < 16; i++) {
             out[i] = random.nextInt(2) != 0;
         }
         return out;
+    }
+
+    private void simulateDecorations(Rand random) {
+        random.setSeed(advance_774.nextSeed(random.getSeed()), false);
+        if (random.nextInt(2) == 0) {
+            random.setSeed(advance_387.nextSeed(random.getSeed()), false);
+        }
+        if (random.nextInt(4) == 0) {
+            random.setSeed(advance_387.nextSeed(random.getSeed()), false);
+        }
+        if (random.nextInt(8) == 0) {
+            random.setSeed(advance_387.nextSeed(random.getSeed()), false);
+        }
+        random.setSeed(advance_830.nextSeed(random.getSeed()), false);
+        if (random.nextInt(32) == 0) {
+            random.setSeed(advance_387.nextSeed(random.getSeed()), false);
+        }
+    }
+
+    private boolean checkWaterfalls(Rand random) {
+        for (int i = 0; i < 50; i++) {
+            int x = random.nextInt(16);
+            int y = random.nextInt(random.nextInt(120) + 8);
+            int z = random.nextInt(16);
+            if (x == WATERFALL_X && y == WATERFALL_Y && z == WATERFALL_Z)
+                return true;
+            if (x == WATERFALL_X) {
+                if (y <= WATERFALL_Y + 1 && y >= WATERFALL_Y && Math.abs(z - WATERFALL_Z) <= 2)
+                    return false;
+            }
+        }
+        return false;
     }
 }
 
