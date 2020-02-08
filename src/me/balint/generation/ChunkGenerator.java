@@ -52,8 +52,10 @@ public class  ChunkGenerator {
             }
 
             random.setSeed(seed, false);
-            random.nextInt(16);
-            random.nextInt(16);
+            int treeX = random.nextInt(16);
+            int treeZ = random.nextInt(16);
+            if (isValidTreeSpot(treeX, treeZ, true, true))
+                return false;
             random.nextInt(3);
             seed = random.getSeed();
         }
@@ -82,12 +84,8 @@ public class  ChunkGenerator {
                     return -1;
                 }
             } else {
-                if (treeZ >= WATERFALL_Z - 1 && treeZ <= WATERFALL_Z + 1 && treeX <= WATERFALL_X - 3 && treeX >= WATERFALL_X - 5)
+                if (!isValidTreeSpot(treeX, treeZ, firstTreeFound, secondTreeFound))
                     return -1;
-                if (!firstTreeFound && Math.max(Math.abs(treeX - TREE1_X), Math.abs(treeZ - TREE1_Z)) <= 1
-                        || !secondTreeFound && Math.max(Math.abs(treeX - TREE2_X), Math.abs(treeZ - TREE2_Z)) <= 1) {
-                    return -1;
-                }
             }
 
             if (THIRD_TREE_ENABLED) {
@@ -141,6 +139,12 @@ public class  ChunkGenerator {
             }
         }
         return false;
+    }
+
+    private boolean isValidTreeSpot(int treeX, int treeZ, boolean firstTreeFound, boolean secondTreeFound) {
+        return (treeZ < WATERFALL_Z - 1 || treeZ > WATERFALL_Z + 1 || treeX > WATERFALL_X - 3 || treeX < WATERFALL_X - 5)
+                && (firstTreeFound || Math.max(Math.abs(treeX - TREE1_X), Math.abs(treeZ - TREE1_Z)) > 1)
+                && (secondTreeFound || Math.max(Math.abs(treeX - TREE2_X), Math.abs(treeZ - TREE2_Z)) > 1);
     }
 }
 

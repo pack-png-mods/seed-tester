@@ -31,7 +31,7 @@ public class Main implements Runnable {
                 long seed = Long.parseLong(line);
                 if (generator.populate(seed)) {
                     found++;
-                    writer.write(line + "\n");
+                    writer.write(line + " " + generator.treeCount + "\n");
                 }
             }
             reader.close();
