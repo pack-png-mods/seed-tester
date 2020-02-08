@@ -84,7 +84,7 @@ public class  ChunkGenerator {
                     return -1;
                 }
             } else {
-                if (!isValidTreeSpot(treeX, treeZ, firstTreeFound, secondTreeFound))
+                if (isValidTreeSpot(treeX, treeZ, firstTreeFound, secondTreeFound))
                     return -1;
             }
 
@@ -141,10 +141,21 @@ public class  ChunkGenerator {
         return false;
     }
 
+    /**
+     * Returns true if a tree could definitely spawn at the location, and false if unsure or definitely not
+     */
     private boolean isValidTreeSpot(int treeX, int treeZ, boolean firstTreeFound, boolean secondTreeFound) {
-        return (treeZ < WATERFALL_Z - 1 || treeZ > WATERFALL_Z + 1 || treeX > WATERFALL_X - 3 || treeX < WATERFALL_X - 5)
-                && (firstTreeFound || Math.max(Math.abs(treeX - TREE1_X), Math.abs(treeZ - TREE1_Z)) > 1)
-                && (secondTreeFound || Math.max(Math.abs(treeX - TREE2_X), Math.abs(treeZ - TREE2_Z)) > 1);
+        if (treeZ >= WATERFALL_Z - 1 && treeZ <= WATERFALL_Z + 1 && treeX <= WATERFALL_X - 3 && treeX >= WATERFALL_X - 5)
+            return true;
+        if (!firstTreeFound) {
+            if (treeX >= TREE1_X - 1 && treeX <= TREE1_X + 1 && treeZ >= TREE1_Z - 1 && treeZ <= TREE1_Z + 1)
+                return true;
+        }
+        if (!secondTreeFound) {
+            if (treeX >= TREE2_X - 1 && treeX <= TREE2_X + 1 && treeZ >= TREE2_Z - 1 && treeZ <= TREE2_Z + 1)
+                return true;
+        }
+        return false;
     }
 }
 
